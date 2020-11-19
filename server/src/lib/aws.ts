@@ -21,20 +21,20 @@ export namespace AWS {
   export function getS3() {
     if (!this.s3) {
       let params = { ...awsDefaults, ...getConfig().S3_CONFIG };
-      try {
-        sts.assumeRoleWithWebIdentity(tokenParams, (err, data) => {
-          if (err) console.error(err, err.stack);
-          else {
-            params.credentials = {
-              accessKeyId: data.Credentials.AccessKeyId,
-              secretAccessKey: data.Credentials.SecretAccessKey,
-              sessionToken: data.Credentials.SessionToken,
-            };
-          }
-        });
-      } catch (err) {
-        console.error(`Problem encountered assuming STS role: ${err.message}`);
-      }
+
+      sts.assumeRoleWithWebIdentity(tokenParams, (err, data) => {
+        if (err)
+          console.error(
+            `Problem encountered assuming STS role: ${err.message}`
+          );
+        else {
+          params.credentials = {
+            accessKeyId: data.Credentials.AccessKeyId,
+            secretAccessKey: data.Credentials.SecretAccessKey,
+            sessionToken: data.Credentials.SessionToken,
+          };
+        }
+      });
 
       this.s3 = new S3(params);
     }
